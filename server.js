@@ -6,19 +6,19 @@ const dotenv = require("dotenv");
 
 require("dotenv").config();
 
-//Initialize
+// Initialize
 const app = express();
 
-//Assign port
-const PORT = process.env.PORT || 8080;
+// Assign port
+const PORT = process.env.PORT || 8081;
 
 app.use(cors());
 app.use(bodyParser.json());
 
-//DB link
+// DB link
 const URL = process.env.MONGODB_URL;
 
-//MongoDB config
+// MongoDB config
 mongoose.connect(URL).then(() => {
     console.log('Connected to MongoDB');
 })
@@ -26,7 +26,7 @@ mongoose.connect(URL).then(() => {
     console.error('Error connecting to MongoDB:', error);
 });
 
-//Connection
+// Connection
 mongoose.connection.once("open", ()=> {
     console.log("MongoDB connection success...!");
 })
@@ -35,7 +35,6 @@ const truckRouter = require("./routes/trucks");
 //truck DB
 //Backend URL
 //http://Localhost:8080/truck
-
 app.use("/truck", truckRouter);
 
 const truckMaintenanceRouter = require("./routes/truckMaintenance");
@@ -49,6 +48,12 @@ const truckFuelCostRouter = require("./routes/truckFuelCost");
 //Backend URL
 //http://Localhost:8080/FuelCost
 app.use("/FuelCost", truckFuelCostRouter);
+
+const paymentRouter = require("./routes/payment");
+// Payment DB
+// Backend URL
+// http://Localhost:8080/payment
+app.use("/payment", paymentRouter);
 
 //load to the existing port
 app.listen(PORT, ()=> {
