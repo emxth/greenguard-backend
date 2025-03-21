@@ -1,8 +1,17 @@
 const mongoose = require("mongoose");
-const schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-const userSchema = new schema({
-    name :{
+const userSchema = new Schema({
+    user_id: {
+        type: Number,
+        unique: true, // Auto-increment should be handled manually or by a package like mongoose-sequence
+        required: true,
+    },    
+    first_name :{
+        type: String,
+        required: true,
+    },
+    last_name :{
         type: String,
         required: true,
     },
@@ -10,7 +19,7 @@ const userSchema = new schema({
         type: String,
         required: true,
     },
-    password_hash:{
+    password:{
         type: String,
         required: true,
     },
@@ -25,7 +34,7 @@ const userSchema = new schema({
     role:{
         type: String,
         required: true,
-        enum: ["citizen", "admin", "driver", "center_manager", "worker"],
+        enum: ["citizen", "admin", "driver", "request_manager", "finance_manager", "center_manager"],
         default: "citizen",
     },
     created_at:{
