@@ -14,6 +14,7 @@ router.route("/addtruckRequest").post((req,res) => {
     const Request_Date = req.body.Request_Date;
     const TruckCapacity = Number(req.body.TruckCapacity);
     const PickupLocation = req.body.PickupLocation;
+    const Priority = req.body.Priority;
     const RequestStatus = req.body.RequestStatus;
 
     const newTruckRequest = new requestTruck({
@@ -23,6 +24,7 @@ router.route("/addtruckRequest").post((req,res) => {
         Request_Date,
         TruckCapacity,
         PickupLocation,
+        Priority,
         RequestStatus
     })
 

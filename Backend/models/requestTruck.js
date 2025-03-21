@@ -28,6 +28,10 @@ const requestTruckSchema = new schema({
         type: String,
         required: true
     },
+    Priority:{
+        type: String,
+        required: true
+    },
     RequestStatus:{
         type: String,
     }
