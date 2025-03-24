@@ -55,6 +55,12 @@ const paymentRouter = require("./routes/payment");
 // http://Localhost:8080/payment
 app.use("/payment", paymentRouter);
 
+const userRouter = require("./routes/user");
+// Payment DB
+// Backend URL
+// http://Localhost:8081/user/
+app.use("/user", userRouter);
+
 //load to the existing port
 app.listen(PORT, ()=> {
     console.log(`server is up and running on port : ${PORT}`);
