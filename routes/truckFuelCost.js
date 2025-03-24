@@ -39,7 +39,6 @@ router.route("/getAllFuelCost").get((req, res) => {
     })
 })
 
-
 //http://localhost:8080/FuelCost/deleteFuelCost
 //delete costs
 router.route("/deleteFuelCost/:ID").delete(async(req, res) =>{
@@ -52,5 +51,32 @@ router.route("/deleteFuelCost/:ID").delete(async(req, res) =>{
         res.status(500).send({status: "Error in server to delete", error:err.message});
     })
 })
+
+// Update status
+router.put("/updatestatus/:ID", async (req, res) => {
+    try {
+        let fuelID = req.params.ID;
+        
+        // Destructure request body
+        const { Status } = req.body;
+
+        // Update status in database
+        const updatedFuel = await truckFuelCosts.findByIdAndUpdate(
+            fuelID, 
+            { Status },  // Update only the status field
+            { new: true }  // Return the updated document
+        );
+
+        if (!updatedFuel) {
+            return res.status(404).json({ status: "Error", message: "Truck Fuel Record Not Found" });
+        }
+
+        res.status(200).json({ status: "Success", message: "Truck Fuel Status Updated", data: updatedFuel });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: "Error", message: "Error updating truck fuel status" });
+    }
+});
 
 module.exports = router;

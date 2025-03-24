@@ -26,6 +26,7 @@ const truckMaintenanceSchema = new schema({
     },
     Status:{
         type: String,
+        default: "Pending"
     }
 });
 

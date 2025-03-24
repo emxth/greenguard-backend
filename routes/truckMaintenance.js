@@ -1,7 +1,7 @@
 const router = require("express").Router();
-
 const { error } = require("console");
-//use created model
+
+// Use created model
 let truckMaintainance = require("../models/truckMaintainance");
 
 //http://Localhost:8080/Maintenance/addTruckCost
@@ -53,5 +53,32 @@ router.route("/deleteCost/:ID").delete(async(req, res) =>{
         res.status(500).send({status: "Error in server to delete", error:err.message});
     })
 })
+
+// Update status
+router.put("/updatestatus/:ID", async (req, res) => {
+    try {
+        let maintainID = req.params.ID;
+        
+        // Destructure request body
+        const { Status } = req.body;
+
+        // Update status in database
+        const updatedMaintenance = await truckMaintainance.findByIdAndUpdate(
+            maintainID, 
+            { Status },  // Update only the status field
+            { new: true }  // Return the updated document
+        );
+
+        if (!updatedMaintenance) {
+            return res.status(404).json({ status: "Error", message: "Truck Maintenance Record Not Found" });
+        }
+
+        res.status(200).json({ status: "Success", message: "Truck Maintenance Status Updated", data: updatedMaintenance });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: "Error", message: "Error updating truck maintenance status" });
+    }
+});
 
 module.exports = router;
