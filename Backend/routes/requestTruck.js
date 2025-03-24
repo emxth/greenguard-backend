@@ -10,6 +10,7 @@ let requestTruck = require("../models/requestTruck");
 router.route("/addtruckRequest").post((req,res) => {
     const RequestID = req.body.RequestID;
     const Truck_RegNumber = req.body.Truck_RegNumber;
+    const PickUp_ID = req.body.PickUp_ID;
     const driver_id = req.body.driver_id;
     const Request_Date = req.body.Request_Date;
     const TruckCapacity = Number(req.body.TruckCapacity);
@@ -20,6 +21,7 @@ router.route("/addtruckRequest").post((req,res) => {
     const newTruckRequest = new requestTruck({
         RequestID,
         Truck_RegNumber,
+        PickUp_ID,
         driver_id,
         Request_Date,
         TruckCapacity,
@@ -45,33 +47,6 @@ router.route("/").get((req, res) => {
     })
 })
 
-//http://Localhost:8070/requestTruck/update/:reqID
-//Update truck Info
-router.route("/update/:reqID").put(async(req, res) => {
-
-    let reqID = req.params.reqID;
-    
-    //Destructure method(get updatable records)
-    const {Request_Date, TruckCapacity, PickupLocation, Destination} = req.body;
-
-    //hold new updated records
-    const updatetruckRequest = {
-        Request_Date,
-        TruckCapacity,
-        PickupLocation,
-        PickupLocation,
-        Destination
-    }
-
-    const updateRequest = await requestTruck.findOneAndUpdate({RequestID: reqID}, updatetruckRequest).then(() => {
-        res.status(200).send({status : "Truck Request updated"});
-    }).catch((err) => {
-        console.log(err);
-        //send error to forntend
-        res.status(500).send({status : "Error with updating truck request"});
-    })
-})
-
 //http://Localhost:8070/requestTruck/deleteRequest/:reqID
 //Delete Truck request 
 router.route("/deleteRequest/:reqID").delete(async(req, res) =>{
@@ -90,8 +65,8 @@ router.route("/deleteRequest/:reqID").delete(async(req, res) =>{
 router.route("/gettruckRequest/:reqID").get(async (req, res) => {
     let reqID = req.params.reqID;
 
-    await requestTruck.findOne({RequestID: reqID }).then((RequestInfo) => {
-        res.status(200).send({status: "Truck request fetched", RequestInfo})
+    await requestTruck.findOne({RequestID: reqID }).then((truckRequestInfo) => {
+        res.status(200).send({status: "Truck request fetched", truckRequestInfo})
     }).catch((err) => {
         console.log(err.message);
         res.status(500).send({status: "Error in server to fetch truck request", error: err.message});
@@ -130,5 +105,41 @@ router.get("/latestRequestID", async (req, res) => {
     }
 });
 
+//http://Localhost:8070/requestTruck/getAssignedRequests
+//Get assigned truck details
+router.route("/getAssignedRequests").get(async (req, res) => {
+    try {
+        const assignedTruckRequest = await requestTruck.find({ RequestStatus: "Assigned" });
+        res.status(200).json(assignedTruckRequest);
+    } catch (err) {
+        console.error("Error fetching assigned truck requests:", err);
+        res.status(500).json({ status: "Error fetching assigned truck requests", error: err.message });
+    }
+});
+
+//http://Localhost:8070/requestTruck/update/:reqID
+//Update truck Info
+router.route("/update/:reqID").put(async(req, res) => {
+
+    let reqID = req.params.reqID;
+    
+    //Destructure method(get updatable records)
+    const {Request_Date, TruckCapacity, Priority} = req.body;
+
+    //hold new updated records
+    const updatetruckRequest = {
+        Request_Date,
+        TruckCapacity,
+        Priority
+    }
+
+    const updateRequest = await requestTruck.findOneAndUpdate({RequestID: reqID}, updatetruckRequest).then(() => {
+        res.status(200).send({status : "Truck Request updated"});
+    }).catch((err) => {
+        console.log(err);
+        //send error to forntend
+        res.status(500).send({status : "Error with updating truck request"});
+    })
+})
 
 module.exports = router;

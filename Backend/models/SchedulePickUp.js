@@ -2,47 +2,40 @@ const mongoose = require("mongoose");
 
 const schema = mongoose.Schema;
 
-const requestTruckSchema = new schema({
-    RequestID : {
+const schedulePickUp = new schema({
+    Schedule_ID : {
         type: String,
         required: true,
         unique: true
-    },
-    Truck_RegNumber :{
-        type: String,
-        ref: 'trucks'
     },
     PickUp_ID :{
         type: String,
         ref: 'pickup_requests'
     },
-    driver_id :{
+    Truck_RegNumber :{
         type: String,
+        ref: 'trucks'
+    },
+    driver_id :{
+        type: Number,
         ref: 'Staff'
     },
-    Request_Date :{
+    ScheduleDate :{
         type: String,
         required: true
     },
-    TruckCapacity:{
-        type: Number,
-        required: true
-    },
-    PickupLocation:{
+    Comments:{
         type: String,
         required: true
     },
-    Priority:{
+    ScheduleStatus:{
         type: String,
         required: true
-    },
-    RequestStatus:{
-        type: String,
     }
 });
 
 //send above details to specific table in DB
-const RequestTruck = mongoose.model("RequestTruck", requestTruckSchema);
+const PickUpSchedule = mongoose.model("SchedulePickUp", schedulePickUp);
 
 //Export the module
-module.exports = RequestTruck;
+module.exports = PickUpSchedule;

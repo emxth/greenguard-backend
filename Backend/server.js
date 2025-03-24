@@ -45,6 +45,12 @@ const viewPickupRouter = require("./routes/pickups");
 
 app.use("/pickupRequests", viewPickupRouter); 
 
+const shedulePickupRouter = require("./routes/shedulePickUp");
+//Backend URL
+//http://Localhost:8070/shedulePickup
+
+app.use("/shedulePickup", shedulePickupRouter); 
+
 //load to the existing port
 app.listen(PORT, ()=> {
     console.log(`server is up and running on port : ${PORT}`);
