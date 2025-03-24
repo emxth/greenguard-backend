@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const paymentSchema = new mongoose.Schema({
+const paymentSchema = new Schema({
     user_id: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: 'user',
     },
@@ -17,8 +18,8 @@ const paymentSchema = new mongoose.Schema({
     amount: {
         type: Number,
         required: true,
-        enum: [350.00, 750.00], // Only allows these two values
-    }
+        enum: [350, 750], // Only allows these two values
+    },
 });
 
 const Payment = mongoose.model('Payment', paymentSchema);

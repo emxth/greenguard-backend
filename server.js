@@ -50,16 +50,13 @@ const truckFuelCostRouter = require("./routes/truckFuelCost");
 app.use("/FuelCost", truckFuelCostRouter);
 
 const paymentRouter = require("./routes/payment");
-// Payment DB
-// Backend URL
-// http://Localhost:8080/payment
 app.use("/payment", paymentRouter);
 
 const userRouter = require("./routes/user");
-// Payment DB
-// Backend URL
-// http://Localhost:8081/user/
 app.use("/user", userRouter);
+
+app.use("/api", require("./routes/auth"));
+app.use(cors({ origin: "http://localhost:3000" }));
 
 //load to the existing port
 app.listen(PORT, ()=> {

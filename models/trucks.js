@@ -32,7 +32,7 @@ const truckSchema = new schema({
     driver_id: {
         type: Number,
         required: true,
-        ref: 'Staff'
+        ref: 'user'
     },
     isActive:{
         type: Boolean,

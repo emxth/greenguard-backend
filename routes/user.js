@@ -1,26 +1,20 @@
-const router = require("express").Router();
-const { error } = require("console");
-
-// Use created model
-const User = require("../models/user");
-
-//http://Localhost:8081/user/createuser
-
+const express = require("express");
+const router = express.Router();
+const User = require("../models/user"); // Import the model
 const bcrypt = require("bcrypt");
 
 // Create new user
 router.post("/createuser", async (req, res) => {
     try {
-        const { user_id, first_name, last_name, created_at, email, password, phone, address, role } = req.body;
-
+        const { first_name, last_name, created_at, email, password, phone, address, role } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
-            user_id,
             first_name,
             last_name,
             created_at,
             email,
+            // password,
             password: hashedPassword, // Store hashed password
             phone,
             address,
@@ -52,7 +46,12 @@ router.put("/updateuser/:userid", async (req, res) => {
         let userid = req.params.userid;
         const { first_name, last_name, created_at, email, password, phone, address, role } = req.body;
 
-        const updateUser = { first_name, last_name, created_at, email, password, phone, address, role };
+        const updateUser = { first_name, last_name, created_at, email, phone, address, role };
+
+        // If a new password is provided, hash it before updating
+        if (password) {
+            updateUser.password = await bcrypt.hash(password, 10);
+        }
 
         const updatedUser = await User.findOneAndUpdate({ _id: userid }, updateUser, { new: true });
 
