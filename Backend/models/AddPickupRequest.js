@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const schema = mongoose.Schema;
-
+//Pickup request schema
 const pickUpRequestSchma = new schema({
     PickUp_ID :{
         type: String,
