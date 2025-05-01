@@ -36,6 +36,11 @@ const userSchema = new Schema({
         type: Date,
         default: Date.now   // Automatically sets the current date
     },
+    stripe_customer_id: {
+        type: String,
+        required: false,
+        default: null,
+    },
 });
 
 //send above details to specific table in DB

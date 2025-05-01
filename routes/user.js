@@ -6,7 +6,8 @@ const bcrypt = require("bcrypt");
 // Create new user
 router.post("/createuser", async (req, res) => {
     try {
-        const { first_name, last_name, created_at, email, password, phone, address, role } = req.body;
+        const { first_name, last_name, created_at, email, password, phone, address, role, stripe_customer_id } = req.body;
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
@@ -18,7 +19,8 @@ router.post("/createuser", async (req, res) => {
             password: hashedPassword, // Store hashed password
             phone,
             address,
-            role
+            role,
+            stripe_customer_id
         });
 
         await newUser.save();

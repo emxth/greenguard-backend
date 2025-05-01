@@ -49,6 +49,9 @@ const truckFuelCostRouter = require("./routes/truckFuelCost");
 //http://Localhost:8080/FuelCost
 app.use("/FuelCost", truckFuelCostRouter);
 
+const Stripe = require("stripe");
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
 const paymentRouter = require("./routes/payment");
 app.use("/payment", paymentRouter);
 

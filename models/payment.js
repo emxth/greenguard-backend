@@ -18,7 +18,7 @@ const paymentSchema = new Schema({
     amount: {
         type: Number,
         required: true,
-        enum: [350, 750], // Only allows these two values
+        enum: [350, 550, 750, 2000, 4000], // Only allows these two values
     },
 });
 
