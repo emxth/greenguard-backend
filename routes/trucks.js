@@ -14,7 +14,7 @@ router.route("/addTruck").post((req,res) => {
     const Insurance_Expiry = req.body.Insurance_Expiry;
     const Inspection__date = req.body.Inspection__date;
     const Collection_center_id = Number(req.body.Collection_center_id);
-    const driver_id = Number(req.body.driver_id);
+    const driver_id = req.body.driver_id;
     const isActive = Boolean(req.body.isActive);
 
     const newTruck = new truck({
@@ -35,6 +35,7 @@ router.route("/addTruck").post((req,res) => {
     })
 });
 
+//http://Localhost:8080/truck/
 //Get Truck information
 router.route("/").get((req, res) => {
     truck.find().then((trucks) => {

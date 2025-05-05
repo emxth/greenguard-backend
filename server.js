@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const sendEmailRoute = require('./routes/sendServiceDueEmail');
 
 require("dotenv").config();
 
@@ -49,6 +50,12 @@ const truckFuelCostRouter = require("./routes/truckFuelCost");
 //http://Localhost:8080/FuelCost
 app.use("/FuelCost", truckFuelCostRouter);
 
+//User Table
+const UserRouter = require("./routes/user");
+//Backend URL
+//http://Localhost:8080/user
+app.use("/user", UserRouter);
+
 const truckRequestRouter = require("./routes/truckrequests");
 //Backend URL
 //http://Localhost:8080/truckRequest
@@ -58,4 +65,6 @@ app.use("/truckRequest", truckRequestRouter);
 app.listen(PORT, ()=> {
     console.log(`server is up and running on port : ${PORT}`);
 })
+//http://Localhost:8080/api
+app.use('/api', sendEmailRoute);
 

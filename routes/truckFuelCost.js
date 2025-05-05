@@ -29,6 +29,45 @@ router.route("/addFuelCost").post((req,res) => {
     })
 });
 
+//http://localhost:8080/FuelCost/getOneFuelCost/:costID
+//Get details of one truck request
+router.route("/getOneFuelCost/:costID").get(async (req, res) => {
+    let costID = req.params.costID;
+
+    await truckFuelCosts.findOne({_id: costID }).then((FuelCostInfo) => {
+        res.status(200).send({status: "Fuel cost fetched", FuelCostInfo})
+    }).catch((err) => {
+        console.log(err.message);
+        res.status(500).send({status: "Error in server to fetch cost", error: err.message});
+    })
+})
+
+//http://localhost:8080/FuelCost/updateFuelCost/:costID
+//Update truck Info
+router.route("/updateFuelCost/:costID").put(async(req, res) => {
+
+    let costID = req.params.costID;
+    
+    //Destructure method(get updatable records)
+    const {Fuel_Date, FuelType, FuelCost, Litres} = req.body;
+
+    //hold new updated records
+    const updateFuelCost = {
+        Fuel_Date,
+        FuelType,
+        FuelCost,
+        Litres
+    }
+
+    const update = await truckFuelCosts.findOneAndUpdate({_id: costID}, updateFuelCost).then(() => {
+        res.status(200).send({status : "Truck Fuel Cost updated"});
+    }).catch((err) => {
+        console.log(err);
+        //send error to forntend
+        res.status(500).send({status : "Error with updating truck Fuel cost"});
+    })
+})
+
 //http://localhost:8080/FuelCost/getAllFuelCost
 //Get all trucks
 router.route("/getAllFuelCost").get((req, res) => {

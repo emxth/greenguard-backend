@@ -31,6 +31,46 @@ router.route("/addTruckCost").post((req,res) => {
     })
 });
 
+//http://localhost:8080/Maintenance/getOneCost/:costID
+//Get details of one truck request
+router.route("/getOneCost/:costID").get(async (req, res) => {
+    let costID = req.params.costID;
+
+    await truckMaintainance.findOne({_id: costID }).then((CostInfo) => {
+        res.status(200).send({status: "Maintenance cost fetched", CostInfo})
+    }).catch((err) => {
+        console.log(err.message);
+        res.status(500).send({status: "Error in server to fetch cost", error: err.message});
+    })
+})
+
+//http://localhost:8080/Maintenance/updateMaintenanceCost/:costID
+//Update truck Info
+router.route("/updateMaintenanceCost/:costID").put(async(req, res) => {
+
+    let costID = req.params.costID;
+    
+    //Destructure method(get updatable records)
+    const {Maintenance_Date, maintenance_type, Cost, Description} = req.body;
+
+    //hold new updated records
+    const updateMaintenanceCost = {
+        Maintenance_Date,
+        maintenance_type,
+        Cost,
+        Description
+    }
+
+    const update = await truckMaintainance.findOneAndUpdate({_id: costID}, updateMaintenanceCost).then(() => {
+        res.status(200).send({status : "Truck Maintenance Cost updated"});
+    }).catch((err) => {
+        console.log(err);
+        //send error to forntend
+        res.status(500).send({status : "Error with updating truck Maintenance cost"});
+    })
+})
+
+
 //http://localhost:8080/Maintenance/getAllCosts
 //Get all trucks
 router.route("/getAllCosts").get((req, res) => {
@@ -40,6 +80,26 @@ router.route("/getAllCosts").get((req, res) => {
         console.log(err);
     })
 })
+
+//http://localhost:8080/Maintenance/SearchTruckCosts/:RegNum
+router.get("/SearchTruckCosts/:RegNum", async (req, res) => {
+    const RegNum = req.params.RegNum;
+
+    try {
+        const CostList = await truckMaintainance.find({
+            Truck_RegNum: { $regex: new RegExp(RegNum, "i") }
+        });
+
+        if (CostList.length > 0) {
+            res.status(200).send({ status: "Truck cost(s) found", truckMaintainance: CostList });
+        } else {
+            res.status(404).send({ status: "No costs found" });
+        }
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send({ status: "Server error", error: err.message });
+    }
+});
 
 //http://localhost:8080/Maintenance/deleteCost
 //delete costs
