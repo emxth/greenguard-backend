@@ -51,6 +51,12 @@ const shedulePickupRouter = require("./routes/shedulePickUp");
 
 app.use("/shedulePickup", shedulePickupRouter); 
 
+const sendSMSRouter = require("./routes/sendScheduleSMS");
+//Backend URL
+//http://Localhost:8070/shedulePickup
+
+app.use("/sms", sendSMSRouter); 
+
 //load to the existing port
 app.listen(PORT, ()=> {
     console.log(`server is up and running on port : ${PORT}`);

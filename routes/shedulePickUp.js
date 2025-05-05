@@ -15,6 +15,7 @@ router.route("/addPickUpSchedule").post((req,res) => {
     const ScheduleDate = req.body.ScheduleDate;
     const Comments = req.body.Comments;
     const ScheduleStatus = req.body.ScheduleStatus;
+    const ScheduleTime = req.body.ScheduleTime;
 
     const newTruckRequest = new schedulePickUp({
         Schedule_ID,
@@ -23,7 +24,8 @@ router.route("/addPickUpSchedule").post((req,res) => {
         driver_id,
         ScheduleDate,
         Comments,
-        ScheduleStatus
+        ScheduleStatus,
+        ScheduleTime
     })
 
     newTruckRequest.save().then(() => {
@@ -46,6 +48,29 @@ router.get("/latestScheduleID", async (req, res) => {
     }
 });
 
+//http://Localhost:8070/shedulePickup/SearchSchedule/:Date
+router.get("/SearchSchedule/:Date", async (req, res) => {
+    const Date = req.params.Date;
+
+    try {
+        const scheduleList = await schedulePickUp.find({
+            $or: [
+                { ScheduleDate: Date }
+            ]
+        });
+
+        if (scheduleList.length > 0) {
+            res.status(200).send({ status: "Schedule(s) found", schedules: scheduleList });
+        } else {
+            res.status(404).send({ status: "No schedules found" });
+        }
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send({ status: "Server error", error: err.message });
+    }
+});
+
+
 //http://Localhost:8070/shedulePickup/getAllSchedule
 //Get all request information
 router.route("/getAllSchedule").get((req, res) => {
@@ -66,6 +91,45 @@ router.route("/deleteSchedule/:sheduleID").delete(async(req, res) =>{
     }).catch((err) => {
         console.log(err.message);
         res.status(500).send({status: "Error in server to delete schedule", error:err.message});
+    })
+})
+
+//http://Localhost:8070/shedulePickup/getScheduleInfo/:sheduleID
+//Get details of one truck request
+router.route("/getScheduleInfo/:sheduleID").get(async (req, res) => {
+    let SchedId = req.params.sheduleID;
+
+    await schedulePickUp.findOne({Schedule_ID: SchedId }).then((truckScheduleInfo) => {
+        res.status(200).send({status: "PickUp schedule fetched", truckScheduleInfo})
+    }).catch((err) => {
+        console.log(err.message);
+        res.status(500).send({status: "Error in server to fetch schedule info", error: err.message});
+    })
+})
+
+//http://Localhost:8070/shedulePickup/updateSchedule/:sheduleID
+//Update Schedule Info
+router.route("/updateSchedule/:sheduleID").put(async(req, res) => {
+
+    let sheduleID = req.params.sheduleID;
+    
+    //Destructure method(get updatable records)
+    const {ScheduleDate, Comments, ScheduleStatus, ScheduleTime} = req.body;
+
+    //hold new updated records
+    const updateSchedule = {
+        ScheduleDate,
+        Comments,
+        ScheduleStatus,
+        ScheduleTime
+    }
+
+    const UpdateSchedule = await schedulePickUp.findOneAndUpdate({Schedule_ID: sheduleID}, updateSchedule).then(() => {
+        res.status(200).send({status : "PickUp Schedule Updated"});
+    }).catch((err) => {
+        console.log(err);
+        //send error to forntend
+        res.status(500).send({status : "Error with updating PickUp Schedule"});
     })
 })
 

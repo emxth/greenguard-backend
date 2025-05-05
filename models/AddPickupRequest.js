@@ -37,6 +37,19 @@ const pickUpRequestSchma = new schema({
     },
     Status:{
         type: String,
+    },
+    energySaved: { 
+        type: Number, 
+        default: 0 
+    },
+    co2Reduced: { 
+        type: Number, 
+        default: 0 
+    },
+    priority: { 
+        type: String, 
+        enum: ['High', 'Medium', 'Low'], 
+        default: 'Low' 
     }
 });
 

@@ -18,7 +18,7 @@ const requestTruckSchema = new schema({
     },
     driver_id :{
         type: String,
-        ref: 'Staff'
+        ref: 'users'
     },
     Request_Date :{
         type: String,

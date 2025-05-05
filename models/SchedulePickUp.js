@@ -31,6 +31,10 @@ const schedulePickUp = new schema({
     ScheduleStatus:{
         type: String,
         required: true
+    },
+    ScheduleTime:{
+        type: String,
+        required: true
     }
 });
 

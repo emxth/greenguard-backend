@@ -117,6 +117,28 @@ router.route("/getAssignedRequests").get(async (req, res) => {
     }
 });
 
+//http://Localhost:8070/requestTruck/searcReqTruck/:reqID
+router.get("/searcReqTruck/:reqID", async (req, res) => {
+    const reqID = req.params.reqID;
+
+    try {
+        const RequestList = await requestTruck.find({
+            $or: [
+                { RequestID: { $regex: new RegExp(reqID, "i") } }
+            ]
+        });
+
+        if (RequestList.length > 0) {
+            res.status(200).send({ status: "Truck request(s) found", requests: RequestList });
+        } else {
+            res.status(404).send({ status: "No truck requests found" });
+        }
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send({ status: "Server error", error: err.message });
+    }
+});
+
 //http://Localhost:8070/requestTruck/update/:reqID
 //Update truck Info
 router.route("/update/:reqID").put(async(req, res) => {
@@ -141,5 +163,20 @@ router.route("/update/:reqID").put(async(req, res) => {
         res.status(500).send({status : "Error with updating truck request"});
     })
 })
+
+//http://Localhost:8070/requestTruck/updateStatus/:reqID
+// In backend (router)
+router.route("/updateStatus/:reqID").put(async(req, res) => {
+    const reqID = req.params.reqID;
+    const { RequestStatus } = req.body; // just RequestStatus
+
+    try {
+        await requestTruck.findOneAndUpdate({ RequestID: reqID }, { RequestStatus });
+        res.status(200).send({ status: "Truck request status updated" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ status: "Error updating status", error: err.message });
+    }
+});
 
 module.exports = router;
