@@ -74,6 +74,7 @@ router.route("/gettruckRequest/:reqID").get(async (req, res) => {
 })
 
 //http://Localhost:8070/requestTruck/searchRequest/:reqID
+
 //Search Truck
 router.route("/searchRequest/:reqID").get(async (req, res) => {
     let reqID = req.params.reqID;
