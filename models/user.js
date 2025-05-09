@@ -41,6 +41,10 @@ const userSchema = new Schema({
         required: false,
         default: null,
     },
+    driverID: {
+        type: String,
+        default: null,
+    }
 });
 
 //send above details to specific table in DB

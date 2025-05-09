@@ -23,7 +23,27 @@ router.post("/createuser", async (req, res) => {
             address,
             role,
             stripe_customer_id,
+            driverID,
         });
+
+        let driverID = null;
+
+        if (role === "driver") {
+            // Find the last driver added (sorted by driverID descending)
+            const lastDriver = await User.findOne({ role: "driver" })
+                .sort({ driverID: -1 }) // This will work if driverID is stored as string "D01", "D02", etc.
+                .exec();
+
+            if (lastDriver && lastDriver.driverID) {
+                // Extract number part and increment
+                const lastIDNum = parseInt(lastDriver.driverID.substring(1)); // remove 'D'
+                const newIDNum = lastIDNum + 1;
+                driverID = `D${newIDNum.toString().padStart(2, "0")}`; // pad with leading zeros (D01, D02...)
+            } else {
+                // First driver
+                driverID = "D01";
+            }
+        }
 
         await newUser.save();
         res.json({ message: "User added successfully!" });

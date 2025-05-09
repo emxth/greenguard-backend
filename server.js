@@ -34,23 +34,70 @@ mongoose.connection.once("open", ()=> {
 const truckRouter = require("./routes/trucks");
 //truck DB
 //Backend URL
-//http://Localhost:8080/truck
+//http://Localhost:8081/truck
+
 app.use("/truck", truckRouter);
 
 const truckMaintenanceRouter = require("./routes/truckMaintenance");
 //Maintenance DB
 //Backend URL
-//http://Localhost:8080/Maintenance
+//http://Localhost:8081/Maintenance
 app.use("/Maintenance", truckMaintenanceRouter);
 
 const truckFuelCostRouter = require("./routes/truckFuelCost");
-//Maintenance DB
 //Backend URL
-//http://Localhost:8080/FuelCost
+//http://Localhost:8081/FuelCost
 app.use("/FuelCost", truckFuelCostRouter);
 
-const Stripe = require("stripe");
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+//User Table
+const UserRouter = require("./routes/user");
+//Backend URL
+//http://Localhost:8081/user
+app.use("/user", UserRouter);
+
+const truckRequestRouterTM = require("./routes/truckrequests");
+//Backend URL
+//http://Localhost:8081/truckRequest
+app.use("/truckRequest", truckRequestRouterTM);
+
+//load to the existing port
+app.listen(PORT, ()=> {
+    console.log(`server is up and running on port : ${PORT}`);
+})
+//http://Localhost:8081/api
+app.use('/api', sendEmailRoute);
+
+const truckRequestRouter = require("./routes/requestTruck");
+//truckrequest DB
+//Backend URL
+//http://Localhost:8081/requestTruck
+
+app.use("/requestTruck", truckRequestRouter); 
+
+const viewPickupRouter = require("./routes/pickups");
+//truckrequest DB
+//Backend URL
+//http://Localhost:8081/pickupRequests
+
+app.use("/pickupRequests", viewPickupRouter); 
+
+const shedulePickupRouter = require("./routes/shedulePickUp");
+//Backend URL
+//http://Localhost:8081/shedulePickup
+
+app.use("/shedulePickup", shedulePickupRouter); 
+
+const sendSMSRouter = require("./routes/sendScheduleSMS");
+//Backend URL
+//http://Localhost:8081/shedulePickup
+
+app.use("/sms", sendSMSRouter); 
+
+const requestPickupRouter = require("./routes/AddPickupRequest");
+//Backend URL
+//http://Localhost:8081/requestPickup
+
+app.use("/requestPickup", requestPickupRouter); 
 
 const paymentRouter = require("./routes/payment");
 app.use("/payment", paymentRouter);
