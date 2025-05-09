@@ -99,6 +99,8 @@ router.get("/paymentsearch/:payId", async (req, res) => {
 router.post("/create-customer:user_id", async (req, res) => {
     try {
         const user = await User.findById(req.params.user_id);
+        console.log("User ID:", req.params.user_id); // Debugging line
+        console.log("User:", user); // Debugging line
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -213,6 +215,19 @@ router.post("/charge-saved", async (req, res) => {
             console.error("Charge failed:", err);
             res.status(500).json({ error: "Failed to charge saved card" });
         }
+    }
+});
+
+// DELETE /remove-card
+router.delete('/remove-card', async (req, res) => {
+    const { user_id, payment_method_id } = req.body;
+
+    try {
+        await stripe.paymentMethods.detach(payment_method_id);
+        res.send({ message: "Card removed successfully." });
+    } catch (err) {
+        console.error("Error removing card:", err);
+        res.status(500).send({ error: "Failed to remove card." });
     }
 });
 

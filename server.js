@@ -58,6 +58,9 @@ app.use("/payment", paymentRouter);
 const userRouter = require("./routes/user");
 app.use("/user", userRouter);
 
+const tempUserRouter = require("./routes/tempUser");
+app.use("/tempuser", tempUserRouter);
+
 app.use("/api", require("./routes/auth"));
 app.use(cors({ origin: "http://localhost:3000" }));
 
