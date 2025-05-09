@@ -48,22 +48,25 @@ const truckFuelCostRouter = require("./routes/truckFuelCost");
 //http://Localhost:8080/FuelCost
 app.use("/FuelCost", truckFuelCostRouter);
 
+const Stripe = require("stripe");
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
 const truckRequestRouter = require("./routes/truckrequests");
 //Backend URL
 //http://Localhost:8080/truckRequest
 app.use("/truckRequest", truckRequestRouter);
 
 const paymentRouter = require("./routes/payment");
-// Payment DB
-// Backend URL
-// http://Localhost:8080/payment
 app.use("/payment", paymentRouter);
 
 const userRouter = require("./routes/user");
-// Payment DB
-// Backend URL
-// http://Localhost:8081/user/
 app.use("/user", userRouter);
+
+const tempUserRouter = require("./routes/tempUser");
+app.use("/tempuser", tempUserRouter);
+
+app.use("/api", require("./routes/auth"));
+app.use(cors({ origin: "http://localhost:3000" }));
 
 //load to the existing port
 app.listen(PORT, ()=> {
