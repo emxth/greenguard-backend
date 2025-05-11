@@ -2,117 +2,81 @@ const router = require("express").Router();
 
 const { error } = require("console");
 //use created model
-let truck = require("../models/trucks");
-
-//http://Localhost:8081/truck/addTruck
+let truckFuelCosts = require("../models/truckFuelCost");
 
 //Create operation
-router.route("/addTruck").post((req,res) => {
-    const RegNumber = req.body.RegNumber;
-    const Model = req.body.Model;
-    const Capacity = Number(req.body.Capacity);
-    const Insurance_Expiry = req.body.Insurance_Expiry;
-    const Inspection__date = req.body.Inspection__date;
-    const Collection_center_id = Number(req.body.Collection_center_id);
-    const driver_id = req.body.driver_id;
-    const isActive = Boolean(req.body.isActive);
+router.route("/addFuelCost").post((req,res) => {
+    const Truck_RegNum = req.body.Truck_RegNum;
+    const Fuel_Date = req.body.Fuel_Date;
+    const FuelType = req.body.FuelType;
+    const FuelCost = Number(req.body.FuelCost);
+    const Litres = req.body.Litres;
+    const Status = req.body.Status;
 
-    const newTruck = new truck({
-        RegNumber,
-        Model,
-        Capacity,
-        Insurance_Expiry,
-        Inspection__date,
-        Collection_center_id,
-        driver_id,
-        isActive
+    const addtruckFuelCost = new truckFuelCosts({
+        Truck_RegNum,
+        Fuel_Date,
+        FuelType,
+        FuelCost,
+        Litres,
+        Status
     })
 
-    newTruck.save().then(() => {
-        res.json("Truck added successfully !");
+    addtruckFuelCost.save().then(() => {
+        res.json("Truck Fuel Cost added successfully !");
     }).catch((err) => {
         console.log(err);
     })
 });
 
-//http://Localhost:8081/truck/
-//Get Truck information
-router.route("/").get((req, res) => {
-    truck.find().then((trucks) => {
-        res.json(trucks);
+//http://localhost:8080/FuelCost/getAllFuelCost
+//Get all trucks
+router.route("/getAllFuelCost").get((req, res) => {
+    truckFuelCosts.find().then((truckFuelCosts) => {
+        res.json(truckFuelCosts);
     }).catch((err) => {
         console.log(err);
     })
 })
 
-//Update truck Info
-router.route("/update/:regNum").put(async(req, res) => {
+//http://localhost:8080/FuelCost/deleteFuelCost
+//delete costs
+router.route("/deleteFuelCost/:ID").delete(async(req, res) =>{
+    let fuelID = req.params.ID;
 
-    let regNum = req.params.regNum;
-    
-    //Destructure method(get updatable records)
-    const {Capacity, Insurance_Expiry, Inspection__date, Collection_center_id, driver_id, isActive} = req.body;
-
-    //hold new updated records
-    const updatetruck = {
-        Capacity,
-        Insurance_Expiry,
-        Inspection__date,
-        Collection_center_id,
-        driver_id,
-        isActive
-    }
-
-    const update = await truck.findOneAndUpdate({RegNumber: regNum}, updatetruck).then(() => {
-        res.status(200).send({status : "Truck updated"});
-    }).catch((err) => {
-        console.log(err);
-        //send error to forntend
-        res.status(500).send({status : "Error with updating truck data"});
-    })
-})
-
-//Delete Truck 
-router.route("/delete/:regNum").delete(async(req, res) =>{
-    let regNum = req.params.regNum;
-
-    await truck.findOneAndDelete({RegNumber: regNum }).then(() => {
-        res.status(200).send({status: "truck deleted"});
+    await truckFuelCosts.findOneAndDelete({_id: fuelID }).then(() => {
+        res.status(200).send({status: "Fuel Cost deleted"});
     }).catch((err) => {
         console.log(err.message);
         res.status(500).send({status: "Error in server to delete", error:err.message});
     })
 })
 
-//Get details of one truck
-router.route("/get/:regNum").get(async (req, res) => {
-    let regNum = req.params.regNum;
+// Update status
+router.put("/updatestatus/:ID", async (req, res) => {
+    try {
+        let fuelID = req.params.ID;
+        
+        // Destructure request body
+        const { Status } = req.body;
 
-    await truck.findOne({RegNumber: regNum }).then((TruckInfo) => {
-        res.status(200).send({status: "Truck fetched", TruckInfo})
-    }).catch((err) => {
-        console.log(err.message);
-        res.status(500).send({status: "Error in server to fetch truck", error: err.message});
-    })
-})
+        // Update status in database
+        const updatedFuel = await truckFuelCosts.findByIdAndUpdate(
+            fuelID, 
+            { Status },  // Update only the status field
+            { new: true }  // Return the updated document
+        );
 
-//http://Localhost:8081/truck/search/:regNum
-//Search Truck
-router.route("/search/:regNum").get(async (req, res) => {
-    let regNum = req.params.regNum;
+        if (!updatedFuel) {
+            return res.status(404).json({ status: "Error", message: "Truck Fuel Record Not Found" });
+        }
 
-    await truck.findOne({ RegNumber: regNum })
-        .then((truck) => {
-            if (truck) {
-                res.status(200).send({ status: "Truck found", truck });
-            } else {
-                res.status(404).send({ status: "Truck not found" });
-            }
-        })
-        .catch((err) => {
-            console.log(err.message);
-            res.status(500).send({ status: "Error in server", error: err.message });
-        });
+        res.status(200).json({ status: "Success", message: "Truck Fuel Status Updated", data: updatedFuel });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ status: "Error", message: "Error updating truck fuel status" });
+    }
 });
 
 module.exports = router;

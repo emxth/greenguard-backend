@@ -50,21 +50,11 @@ const truckFuelCostRouter = require("./routes/truckFuelCost");
 //http://Localhost:8081/FuelCost
 app.use("/FuelCost", truckFuelCostRouter);
 
-//User Table
-const UserRouter = require("./routes/user");
-//Backend URL
-//http://Localhost:8081/user
-app.use("/user", UserRouter);
-
 const truckRequestRouterTM = require("./routes/truckrequests");
 //Backend URL
 //http://Localhost:8081/truckRequest
 app.use("/truckRequest", truckRequestRouterTM);
 
-//load to the existing port
-app.listen(PORT, ()=> {
-    console.log(`server is up and running on port : ${PORT}`);
-})
 //http://Localhost:8081/api
 app.use('/api', sendEmailRoute);
 
@@ -99,6 +89,9 @@ const requestPickupRouter = require("./routes/AddPickupRequest");
 //http://Localhost:8081/requestPickup
 
 app.use("/requestPickup", requestPickupRouter); 
+
+const Stripe = require("stripe");
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const paymentRouter = require("./routes/payment");
 app.use("/payment", paymentRouter);

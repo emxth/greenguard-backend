@@ -9,7 +9,7 @@ let requestPickup = require("../models/AddPickupRequest");
 //Create operation
 router.route("/addPickUpRequest").post((req, res) => {
     const PickUp_ID = req.body.PickUp_ID;
-    const UserID = Number(req.body.UserID);
+    const UserID = req.body.UserID;
     const Name = req.body.Name;
     const PickupDate = req.body.PickupDate;
     const wasteType = req.body.wasteType;

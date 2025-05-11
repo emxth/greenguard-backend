@@ -8,24 +8,10 @@ const TempUser = require("../models/tempUser");
 // Create new user
 router.post("/createuser", async (req, res) => {
     try {
+
         const { first_name, last_name, created_at, email, password, phone, address, role, stripe_customer_id } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = new User({
-            first_name,
-            last_name,
-            created_at,
-            email,
-            // password,
-            password: hashedPassword, // Store hashed password
-            phone,
-            address,
-            role,
-            stripe_customer_id,
-            driverID,
-        });
-
         let driverID = null;
 
         if (role === "driver") {
@@ -44,12 +30,39 @@ router.post("/createuser", async (req, res) => {
                 driverID = "D01";
             }
         }
+        
+        const newUser = new User({
+            first_name,
+            last_name,
+            created_at,
+            email,
+            // password,
+            password: hashedPassword, // Store hashed password
+            phone,
+            address,
+            role,
+            stripe_customer_id,
+            driverID
+        });
+
+        
 
         await newUser.save();
         res.json({ message: "User added successfully!" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// Get all driver records
+router.get("/drivers", async (req, res) => {
+    try {
+        const drivers = await User.find({ role: "driver" });
+        res.json(drivers);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error retrieving driver records" });
     }
 });
 

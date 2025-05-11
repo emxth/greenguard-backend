@@ -8,8 +8,9 @@ const pickUpRequestSchma = new schema({
         unique: true,
     },
     UserID : {
-        type: Number,
-        ref: 'User'
+        type: schema.Types.ObjectId,
+        required: true,
+        ref: 'user',
     },
     Name :{
         type: String,

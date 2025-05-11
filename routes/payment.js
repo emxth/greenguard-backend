@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Payment = require("../models/payment");
 const User = require("../models/user");
+const sendEmail = require("../utils/mailer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Add new payment
@@ -99,8 +100,6 @@ router.get("/paymentsearch/:payId", async (req, res) => {
 router.post("/create-customer:user_id", async (req, res) => {
     try {
         const user = await User.findById(req.params.user_id);
-        console.log("User ID:", req.params.user_id); // Debugging line
-        console.log("User:", user); // Debugging line
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
@@ -228,6 +227,144 @@ router.delete('/remove-card', async (req, res) => {
     } catch (err) {
         console.error("Error removing card:", err);
         res.status(500).send({ error: "Failed to remove card." });
+    }
+});
+
+// POST /send-receipt
+router.post('/send-receipt', async (req, res) => {
+    const { email, userId, amount, date, method } = req.body;
+
+    const latestPayment = await Payment.findOne().sort({ created_at: -1 });
+    const paymentId = latestPayment._id;
+    const formattedAmount = (amount * 100 / 100).toFixed(2);
+    const formattedDate = new Date(date).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f9f9f9;
+            }
+            .receipt-container {
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                padding: 30px;
+                border-top: 4px solid #4CAF50;
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+            .logo {
+                color: #4CAF50;
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            h1 {
+                color: #4CAF50;
+                font-size: 22px;
+                margin: 10px 0;
+            }
+            .divider {
+                border-top: 1px solid #eee;
+                margin: 20px 0;
+            }
+            .details {
+                margin: 25px 0;
+            }
+            .detail-row {
+                display: flex;
+                margin-bottom: 12px;
+            }
+            .detail-label {
+                font-weight: bold;
+                width: 150px;
+                color: #555;
+            }
+            .detail-value {
+                flex: 1;
+            }
+            .amount {
+                font-size: 20px;
+                font-weight: bold;
+                color: #4CAF50;
+                text-align: right;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 30px;
+                color: #777;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="receipt-container">
+            <div class="header">
+                <div class="logo">GreenGuard Solutions</div>
+                <h1>Payment Receipt</h1>
+                <p>Thank you for your payment. Your transaction has been completed successfully.</p>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="details">
+                <div class="detail-row">
+                    <div class="detail-label">Payment ID:</div>
+                    <div class="detail-value">${paymentId}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">User ID:</div>
+                    <div class="detail-value">${userId}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Date:</div>
+                    <div class="detail-value">${formattedDate}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Payment Method:</div>
+                    <div class="detail-value">${method}</div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="detail-row">
+                <div class="detail-label">Amount Paid:</div>
+                <div class="detail-value amount">LKR. ${formattedAmount}</div>
+            </div>
+            
+            <div class="footer">
+                <p>If you have any questions about this receipt, please contact our support team.</p>
+                <p>© ${new Date().getFullYear()} GreenGuard Solutions. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+
+    try {
+        await sendEmail(email, `Your Payment Receipt - LKR. ${formattedAmount}`, html);
+        res.status(200).json({ message: 'Receipt sent successfully' });
+    } catch (err) {
+        console.error('Error sending receipt:', err);
+        res.status(500).json({ error: 'Failed to send receipt' });
     }
 });
 

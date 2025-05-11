@@ -43,7 +43,6 @@ const userSchema = new Schema({
     },
     driverID: {
         type: String,
-        default: null,
     }
 });
 

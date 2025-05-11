@@ -1,10 +1,11 @@
+
 const router = require("express").Router();
 
 const { error } = require("console");
 //use created model
 let truck = require("../models/trucks");
 
-//http://Localhost:8080/truck/addTruck
+//http://Localhost:8081/truck/addTruck
 
 //Create operation
 router.route("/addTruck").post((req,res) => {
@@ -14,7 +15,7 @@ router.route("/addTruck").post((req,res) => {
     const Insurance_Expiry = req.body.Insurance_Expiry;
     const Inspection__date = req.body.Inspection__date;
     const Collection_center_id = Number(req.body.Collection_center_id);
-    const driver_id = Number(req.body.driver_id);
+    const driver_id = req.body.driver_id;
     const isActive = Boolean(req.body.isActive);
 
     const newTruck = new truck({
@@ -35,6 +36,7 @@ router.route("/addTruck").post((req,res) => {
     })
 });
 
+//http://Localhost:8081/truck/
 //Get Truck information
 router.route("/").get((req, res) => {
     truck.find().then((trucks) => {
@@ -96,7 +98,7 @@ router.route("/get/:regNum").get(async (req, res) => {
 })
 
 
-//http://Localhost:8080/truck/search/:regNum
+//http://Localhost:8081/truck/search/:regNum
 //Search Truck
 router.route("/search/:regNum").get(async (req, res) => {
     let regNum = req.params.regNum;

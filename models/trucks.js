@@ -30,9 +30,8 @@ const truckSchema = new schema({
         ref: 'Collection_center'
     },
     driver_id: {
-        type: Number,
-        required: true,
-        ref: 'user'
+        type: String,
+        required: true
     },
     isActive:{
         type: Boolean,
