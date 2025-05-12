@@ -96,6 +96,23 @@ router.get("/paymentsearch/:payId", async (req, res) => {
     }
 });
 
+// Search Payments by User ID
+router.get("/userpayment/:user_id", async (req, res) => {
+    try {
+        let user_id = req.params.user_id;
+        const payment = await Payment.find({ user_id: user_id });
+
+        if (!payment) {
+            return res.status(404).json({ status: "Payments not found" });
+        }
+
+        res.status(200).json({ status: "Payments found", payment });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error searching for payments" });
+    }
+});
+
 // POST /create-customer
 router.post("/create-customer:user_id", async (req, res) => {
     try {

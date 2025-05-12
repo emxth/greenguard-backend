@@ -62,4 +62,40 @@ router.get("/latestPickupID", async (req, res) => {
     }
 });
 
+// Search Pickup requests by UserID
+router.get("/userpickuprequests/:user_id", async (req, res) => {
+    try {
+        const user_id = req.params.user_id;
+        const requests = await requestPickup.find({ UserID: user_id });
+
+        res.status(200).json({
+            status: "success",
+            data: requests
+        });
+
+    } catch (err) {
+        console.error("Error searching pickup requests:", err);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error",
+            error: err.message
+        });
+    }
+});
+
+// Update selected pickup request
+router.put('/update/:id', async (req, res) => {
+    try {
+        const updatedRequest = await requestPickup.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true } // return the updated doc
+        );
+        res.json({ status: "success", data: updatedRequest });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: "error", message: "Update failed" });
+    }
+});
+
 module.exports = router;
