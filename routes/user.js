@@ -9,7 +9,7 @@ const TempUser = require("../models/tempUser");
 router.post("/createuser", async (req, res) => {
     try {
 
-        const { first_name, last_name, created_at, email, password, phone, address, role, stripe_customer_id } = req.body;
+        const { first_name, last_name, created_at, email, password, phone, address, role, stripe_customer_id, otp, otpExpiry } = req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
         let driverID = null;
@@ -30,7 +30,7 @@ router.post("/createuser", async (req, res) => {
                 driverID = "D01";
             }
         }
-        
+
         const newUser = new User({
             first_name,
             last_name,
@@ -42,10 +42,12 @@ router.post("/createuser", async (req, res) => {
             address,
             role,
             stripe_customer_id,
-            driverID
+            driverID,
+            otp,
+            otpExpiry
         });
 
-        
+
 
         await newUser.save();
         res.json({ message: "User added successfully!" });
@@ -206,7 +208,7 @@ router.post('/send-password-notification', async (req, res) => {
     const body = `
         Hi ${last_name},<br><br>
         Your account has been created. Your password is similar to: <b>${password_hint}</b>.
-        First four characters of your first name and given last four characters. (e.g. David -> davi9876).</br>
+        First four characters of your first name and given last four characters. (e.g. David -> davi).</br>
         <br><br>
         To change your password, click the link below:<br>
         <a href="${reset_link}" target="_blank">${reset_link}</a><br><br>
@@ -233,6 +235,7 @@ router.post("/verify-otp", async (req, res) => {
             res.json({ success: true });
 
         } else if (purpose === "reset") {
+
             const user = await User.findOne({ email });
 
             if (!user || user.otp !== otp || user.otpExpiry < new Date()) {
@@ -260,7 +263,7 @@ router.put("/reset-password", async (req, res) => {
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-        const newPassword = Math.random().toString(36).slice(-8);
+        const newPassword = Math.random().toString(36);
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         user.password = hashedPassword;
         await user.save();

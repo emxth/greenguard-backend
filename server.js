@@ -23,12 +23,12 @@ const URL = process.env.MONGODB_URL;
 mongoose.connect(URL).then(() => {
     console.log('Connected to MongoDB');
 })
-.catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
-});
+    .catch((error) => {
+        console.error('Error connecting to MongoDB:', error);
+    });
 
 // Connection
-mongoose.connection.once("open", ()=> {
+mongoose.connection.once("open", () => {
     console.log("MongoDB connection success...!");
 })
 
@@ -63,32 +63,32 @@ const truckRequestRouter = require("./routes/requestTruck");
 //Backend URL
 //http://Localhost:8081/requestTruck
 
-app.use("/requestTruck", truckRequestRouter); 
+app.use("/requestTruck", truckRequestRouter);
 
 const viewPickupRouter = require("./routes/pickups");
 //truckrequest DB
 //Backend URL
 //http://Localhost:8081/pickupRequests
 
-app.use("/pickupRequests", viewPickupRouter); 
+app.use("/pickupRequests", viewPickupRouter);
 
 const shedulePickupRouter = require("./routes/shedulePickUp");
 //Backend URL
 //http://Localhost:8081/shedulePickup
 
-app.use("/shedulePickup", shedulePickupRouter); 
+app.use("/shedulePickup", shedulePickupRouter);
 
 const sendSMSRouter = require("./routes/sendScheduleSMS");
 //Backend URL
 //http://Localhost:8081/shedulePickup
 
-app.use("/sms", sendSMSRouter); 
+app.use("/sms", sendSMSRouter);
 
 const requestPickupRouter = require("./routes/AddPickupRequest");
 //Backend URL
 //http://Localhost:8081/requestPickup
 
-app.use("/requestPickup", requestPickupRouter); 
+app.use("/requestPickup", requestPickupRouter);
 
 const Stripe = require("stripe");
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
@@ -102,11 +102,19 @@ app.use("/user", userRouter);
 const tempUserRouter = require("./routes/tempUser");
 app.use("/tempuser", tempUserRouter);
 
+app.get("/", (request, response) => {
+    console.log(request);
+    return response.status(234).send("Welcome To Recycling Centers MERN Project");
+});
+
+const recyclingRoutes = require("./routes/recyclingRoutes");
+app.use("/recycling", recyclingRoutes); // Updated route prefix
+
 app.use("/api", require("./routes/auth"));
 app.use(cors({ origin: "http://localhost:3000" }));
 
 //load to the existing port
-app.listen(PORT, ()=> {
+app.listen(PORT, () => {
     console.log(`server is up and running on port : ${PORT}`);
 })
 

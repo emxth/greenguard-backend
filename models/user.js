@@ -43,6 +43,14 @@ const userSchema = new Schema({
     },
     driverID: {
         type: String,
+    },
+    otp: { 
+        type: String, 
+        default: null 
+    },
+    otpExpiry: { 
+        type: Date, 
+        default: null 
     }
 });
 
